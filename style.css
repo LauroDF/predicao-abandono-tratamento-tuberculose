@@ -1,0 +1,611 @@
+/* ========================================= */
+/* RESET */
+/* ========================================= */
+
+* {
+
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+
+  font-family: Arial, sans-serif;
+
+  background: #f4f6f9;
+
+  transition: 0.3s;
+}
+
+/* ========================================= */
+/* NAVBAR */
+/* ========================================= */
+
+.navbar {
+
+  height: 80px;
+
+  background: #1f4e79;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  padding: 0 40px;
+
+  position: relative;
+}
+
+.nav-left {
+
+  color: white;
+
+  font-size: 24px;
+
+  font-weight: bold;
+}
+
+/* links centralizados */
+
+.nav-center-links {
+
+  position: absolute;
+
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  display: flex;
+
+  gap: 30px;
+}
+
+.nav-center-links a {
+
+  color: white;
+
+  text-decoration: none;
+
+  font-weight: bold;
+
+  font-size: 16px;
+
+  transition: 0.3s;
+}
+
+.nav-center-links a:hover {
+
+  opacity: 0.8;
+}
+
+.nav-center-links .active {
+
+  border-bottom: 2px solid white;
+
+  padding-bottom: 4px;
+}
+
+/* direita */
+
+.nav-right {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+}
+
+/* ========================================= */
+/* CONTAINERS */
+/* ========================================= */
+
+.container,
+.history-container {
+
+  max-width: 1200px;
+
+  margin: 40px auto;
+
+  padding: 20px;
+}
+
+/* ========================================= */
+/* TITULOS */
+/* ========================================= */
+
+h1,
+.history-panel h2 {
+
+  text-align: center;
+
+  color: #1f4e79;
+
+  margin-bottom: 35px;
+}
+
+/* ========================================= */
+/* GRID */
+/* ========================================= */
+
+.form-grid {
+
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 22px;
+
+  margin-bottom: 25px;
+}
+
+/* dados paciente */
+
+.patient-data {
+
+  display: grid;
+
+  grid-template-columns: 260px 260px 160px;
+
+  gap: 26px;
+
+  margin-bottom: 40px;
+
+  justify-content: start;
+}
+
+.field {
+
+  display: flex;
+
+  flex-direction: column;
+}
+
+/* ========================================= */
+/* LABELS */
+/* ========================================= */
+
+label {
+
+  margin-bottom: 6px;
+
+  font-weight: bold;
+}
+
+.descricao {
+
+  font-size: 11px;
+
+  color: #777;
+}
+
+/* ========================================= */
+/* INPUTS */
+/* ========================================= */
+
+input,
+select {
+
+  padding: 11px;
+
+  border-radius: 8px;
+
+  border: 1px solid #ccc;
+}
+
+/* ========================================= */
+/* BOTÕES GERAIS */
+/* ========================================= */
+
+.buttons {
+
+  display: flex;
+
+  gap: 15px;
+
+  margin-top: 30px;
+}
+
+button {
+
+  border: none;
+
+  border-radius: 10px;
+
+  cursor: pointer;
+
+  transition: 0.3s;
+}
+
+/* primario */
+
+.btn-primary {
+
+  flex: 1;
+
+  padding: 14px;
+
+  font-size: 15px;
+
+  background: #1f4e79;
+
+  color: white;
+}
+
+/* secundario */
+
+.btn-secondary {
+
+  flex: 1;
+
+  padding: 14px;
+
+  font-size: 15px;
+
+  background: #ddd;
+}
+
+/* ========================================= */
+/* RESULTADO */
+/* ========================================= */
+
+.result-card {
+
+  margin-top: 30px;
+
+  background: #f7f9fc;
+
+  padding: 25px;
+
+  border-radius: 12px;
+
+  text-align: center;
+}
+
+.result-value {
+
+  font-size: 42px;
+
+  font-weight: bold;
+
+  margin-top: 10px;
+
+  color: #1f4e79;
+}
+
+/* ========================================= */
+/* FILTROS */
+/* ========================================= */
+
+.filters {
+
+  margin-bottom: 25px;
+}
+
+.filters select {
+
+  width: 320px;
+
+  padding: 12px;
+
+  border-radius: 10px;
+
+  border: 1px solid #ccc;
+
+  font-size: 14px;
+}
+
+/* ========================================= */
+/* ACTIONS */
+/* ========================================= */
+
+.history-actions {
+
+  display: flex;
+
+  justify-content: flex-end;
+
+  align-items: center;
+
+  margin-bottom: 25px;
+}
+
+.left-actions {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+}
+
+.right-actions {
+
+  display: flex;
+
+  gap: 12px;
+}
+
+/* botão selecionar */
+
+#deleteSelected {
+
+  padding: 10px 18px;
+
+  background: #1f4e79;
+
+  color: white;
+
+  font-weight: bold;
+}
+
+/* botão excluir tudo */
+
+#deleteAll {
+
+  padding: 10px 18px;
+
+  background: #311e7b;
+
+  color: white;
+
+  font-weight: bold;
+}
+
+/* ========================================= */
+/* HISTORY CARD */
+/* ========================================= */
+
+.history-card {
+
+  position: relative;
+
+  background: white;
+
+  padding: 16px 20px;
+
+  padding-right: 55px;
+
+  border-radius: 14px;
+
+  margin-bottom: 14px;
+
+  box-shadow: 0 0 12px rgba(0,0,0,0.08);
+}
+
+/* checkbox lateral */
+
+.card-checkbox {
+
+  position: absolute;
+
+  right: 18px;
+
+  top: 50%;
+
+  transform: translateY(-50%);
+}
+
+.select-card {
+
+  width: 18px;
+
+  height: 18px;
+
+  cursor: pointer;
+}
+
+/* topo */
+
+.history-header {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: flex-start;
+}
+
+/* detalhes */
+
+.history-details {
+
+  max-height: 0;
+
+  overflow: hidden;
+
+  transition: 0.4s;
+
+  margin-top: 0;
+}
+
+.history-details.show {
+
+  max-height: 1200px;
+
+  margin-top: 20px;
+}
+
+/* footer */
+
+.card-footer {
+
+  display: flex;
+
+  justify-content: flex-end;
+
+  margin-top: 18px;
+}
+
+/* botão info */
+
+.info-btn {
+
+  padding: 6px 12px;
+
+  font-size: 12px;
+
+  border-radius: 8px;
+
+  background: #1f4e79;
+
+  color: white;
+
+  width: auto;
+}
+
+.info-btn:hover {
+
+  background: #163a5c;
+}
+
+/* ========================================= */
+/* SWITCH */
+/* ========================================= */
+
+.switch {
+
+  position: relative;
+
+  display: inline-block;
+
+  width: 58px;
+
+  height: 30px;
+}
+
+.switch input {
+
+  opacity: 0;
+
+  width: 0;
+
+  height: 0;
+}
+
+.slider {
+
+  position: absolute;
+
+  cursor: pointer;
+
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  background-color: #ccc;
+
+  transition: .4s;
+
+  border-radius: 34px;
+}
+
+.slider:before {
+
+  position: absolute;
+
+  content: "";
+
+  height: 22px;
+
+  width: 22px;
+
+  left: 4px;
+
+  bottom: 4px;
+
+  background-color: white;
+
+  transition: .4s;
+
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+
+  background-color: #5fa8ff;
+}
+
+input:checked + .slider:before {
+
+  transform: translateX(28px);
+}
+
+/* ========================================= */
+/* DARK MODE */
+/* ========================================= */
+
+body.dark-mode {
+
+  background: #121212;
+
+  color: white;
+}
+
+/* cards */
+
+body.dark-mode .container,
+body.dark-mode .history-card {
+
+  background: #1e1e1e;
+}
+
+/* inputs */
+
+body.dark-mode input,
+body.dark-mode select {
+
+  background: #2c2c2c;
+
+  color: white;
+
+  border: 1px solid #555;
+}
+
+/* filtros */
+
+body.dark-mode .filters select {
+
+  background: #2c2c2c;
+
+  color: white;
+
+  border: 1px solid #555;
+}
+
+/* resultado */
+
+body.dark-mode .result-card {
+
+  background: #2b2b2b;
+}
+
+body.dark-mode .result-value {
+
+  color: #5fa8ff;
+}
+
+/* titulos */
+
+body.dark-mode h1,
+body.dark-mode .history-panel h2 {
+
+  color: #5fa8ff;
+}
+
+/* botoes */
+
+body.dark-mode #deleteSelected {
+
+  background: #295f96;
+}
+
+body.dark-mode #deleteAll {
+
+  background: #1c1a70;
+}
+

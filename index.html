@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    TB Predict
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+
+    <!-- ESQUERDA -->
+    <div class="nav-left">
+
+      🫁 TB Predict
+
+    </div>
+
+    <!-- CENTRO -->
+    <div class="nav-center-links">
+
+      <a
+        href="index.html"
+        class="active"
+      >
+        Predição
+      </a>
+
+      <a href="historico.html">
+        Histórico
+      </a>
+
+    </div>
+
+    <!-- DIREITA -->
+    <div class="nav-right">
+
+      <span
+        class="theme-text"
+        id="themeText"
+      >
+        ☀️ Claro
+      </span>
+
+      <label class="switch">
+
+        <input
+          type="checkbox"
+          id="themeToggle"
+        >
+
+        <span class="slider"></span>
+
+      </label>
+
+    </div>
+
+  </nav>
+
+  <!-- CONTAINER -->
+  <div class="container">
+
+    <h1>
+      Predição de Abandono do Tratamento
+    </h1>
+
+    <!-- DADOS PACIENTE -->
+    <div class="patient-data">
+
+      <div class="field">
+
+        <label>
+          Nome do Paciente
+        </label>
+
+        <input
+          type="text"
+          id="nomePaciente"
+          placeholder="Digite o nome"
+          oninput="this.value = this.value.replace(/[^A-Za-zÀ-ÿ\s]/g, '')"
+        >
+
+      </div>
+
+      <div class="field">
+
+        <label>
+          CPF
+        </label>
+
+        <input
+          type="text"
+          id="cpfPaciente"
+          placeholder="000.000.000-00"
+          maxlength="14"
+        >
+
+      </div>
+
+      <div class="field">
+
+        <label>
+          Idade
+        </label>
+
+        <input
+          type="number"
+          id="idade_anos"
+          placeholder="Digite a idade"
+          min="18"
+          max="201"
+        >
+
+      </div>
+
+    </div>
+
+    <!-- FORM -->
+    <div
+      class="form-grid"
+      id="formGrid"
+    ></div>
+
+    <!-- BOTÕES -->
+    <div class="buttons">
+
+      <button
+        class="btn-secondary"
+        id="clearBtn"
+      >
+
+        Limpar Campos
+
+      </button>
+
+      <button
+        class="btn-primary"
+        id="calculateBtn"
+      >
+
+        Calcular Probabilidade
+
+      </button>
+
+    </div>
+
+    <!-- RESULTADO -->
+    <div
+      class="result-card"
+      id="resultCard"
+      style="display:none;"
+    >
+
+      <h2>
+        Probabilidade de abandono
+      </h2>
+
+      <div
+        class="result-value"
+        id="resultValue"
+      >
+        0%
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+
+    /* ====================================== */
+    /* CAMPOS */
+    /* ====================================== */
+
+    const campos = [
+
+      {
+        label: "Tabagismo",
+        key: "AGRAVTABAC",
+        options: ["Sim", "Não"]
+      },
+
+      {
+        label: "Uso de drogas",
+        key: "AGRAVDROGA",
+        options: ["Sim", "Não"]
+      },
+
+      {
+        label: "Possui AIDS",
+        key: "AGRAVAIDS",
+        options: ["Sim", "Não"]
+      },
+
+      {
+        label: "Possui diabetes",
+        key: "AGRAVDIABE",
+        options: ["Sim", "Não"]
+      },
+
+      {
+        label: "Resultado HIV",
+        key: "HIV",
+        options: [
+          "Positivo",
+          "Negativo",
+          "Em andamento",
+          "Não realizado"
+        ]
+      },
+
+      {
+        label: "População de rua",
+        key: "POP_RUA",
+        options: ["Sim", "Não"]
+      },
+
+      {
+        label: "Privado de liberdade",
+        key: "POP_LIBER",
+        options: ["Sim", "Não"]
+      },
+
+      {
+        label: "Imigrante",
+        key: "POP_IMIG",
+        options: ["Sim", "Não"]
+      },
+
+      {
+        label: "Sexo",
+        key: "CS_SEXO",
+        options: [
+          "Masculino",
+          "Feminino",
+          "Ignorado"
+        ]
+      },
+
+      {
+        label: "Baciloscopia",
+        key: "BACILOSC_E",
+        options: [
+          "Positivo",
+          "Negativo",
+          "Não realizado"
+        ]
+      },
+
+      {
+        label: "Cultura de escarro",
+        key: "CULTURA_ES",
+        options: [
+          "Positivo",
+          "Negativo",
+          "Em andamento",
+          "Não realizado"
+        ]
+      },
+
+      {
+        label: "Raio-X do tórax",
+        key: "RAIOX_TORA",
+        options: [
+          "Normal",
+          "Suspeito",
+          "Outra patologia",
+          "Não realizado"
+        ]
+      },
+
+      {
+        label: "Raça/Cor",
+        key: "CS_RACA",
+        options: [
+          "Branca",
+          "Preta",
+          "Parda",
+          "Amarela",
+          "Indígena",
+          "Ignorado"
+        ]
+      },
+
+      {
+        label: "Tratamento",
+        key: "TRATAMENTO",
+        options: [
+          "Novo",
+          "Recidiva",
+          "Reingresso após abandono",
+          "Transferência"
+        ]
+      },
+
+      {
+        label: "Cultura de outros materiais",
+        key: "CULTURA_OU",
+        options: [
+          "Positivo",
+          "Negativo",
+          "Em andamento",
+          "Não realizado"
+        ]
+      },
+
+      {
+        label: "Histopatologia",
+        key: "HISTOPATOL",
+        options: [
+          "Sugestivo TB",
+          "Não sugestivo",
+          "Em andamento",
+          "Não realizado"
+        ]
+      },
+
+      {
+        label: "Tratamento supervisionado",
+        key: "TRATSUP_AT",
+        options: ["Sim", "Não"]
+      },
+
+      {
+        label: "Escolaridade",
+        key: "CS_ESCOL_N",
+        options: [
+          "Analfabeto",
+          "Fundamental incompleto",
+          "Fundamental completo",
+          "Médio incompleto",
+          "Médio completo",
+          "Superior incompleto",
+          "Superior completo",
+          "Ignorado"
+        ]
+      }
+
+    ];
+
+    const formGrid =
+      document.getElementById("formGrid");
+
+    campos.forEach((campo) => {
+
+      const div =
+        document.createElement("div");
+
+      div.className = "field";
+
+      div.innerHTML = `
+
+        <label>
+
+          ${campo.label}
+
+          <span class="descricao">
+            (${campo.key})
+          </span>
+
+        </label>
+
+        <select id="${campo.key}">
+
+          <option value="">
+            Selecione
+          </option>
+
+          ${campo.options.map(op => `
+
+            <option value="${op}">
+              ${op}
+            </option>
+
+          `).join("")}
+
+        </select>
+
+      `;
+
+      formGrid.appendChild(div);
+
+    });
+
+    /* ====================================== */
+    /* CALCULAR */
+    /* ====================================== */
+
+    document
+      .getElementById("calculateBtn")
+      .addEventListener("click", () => {
+
+        const nome =
+          document.getElementById("nomePaciente").value;
+
+        const cpf =
+          document.getElementById("cpfPaciente").value;
+
+        const cpfNumerico =
+          cpf.replace(/\D/g, "");
+
+          if (cpfNumerico.length !== 11) {
+
+            alert(
+              "CPF deve conter 11 dígitos."
+            );
+
+            return;
+          }
+
+          if (!/^[A-Za-zÀ-ÿ\s]+$/.test(nome)) {
+
+            alert(
+              "Nome deve conter apenas letras e espaços."
+            );
+
+            return;
+          }
+
+        const idade =
+          document.getElementById("idade_anos").value;
+
+        if (!nome || !cpf || !idade) {
+
+          alert(
+            "Preencha nome, CPF e idade."
+          );
+
+          return;
+        }
+
+        if (idade < 18 || idade > 201) {
+
+          alert(
+            "Idade deve ser entre 18 e 201 anos."
+          );
+
+          return;
+        }
+
+        let dados = {};
+
+        let camposValidos = true;
+
+        campos.forEach((campo) => {
+
+          const valor =
+            document.getElementById(campo.key).value;
+
+          if (!valor) {
+
+            camposValidos = false;
+          }
+
+          dados[campo.label] = valor;
+
+        });
+
+        if (!camposValidos) {
+
+          alert(
+            "Preencha todos os campos."
+          );
+
+          return;
+        }
+
+        /* ====================================== */
+        /* AQUI ENTRARÁ A IA FUTURAMENTE */
+        /* ====================================== */
+
+        const resultado =
+          Math.floor(
+            Math.random() * 100
+          );
+
+        /* ====================================== */
+
+        document
+          .getElementById("resultCard")
+          .style.display = "block";
+
+        document
+          .getElementById("resultValue")
+          .textContent =
+          resultado + "%";
+
+        /* salva histórico */
+
+        const historico =
+          JSON.parse(
+            localStorage.getItem("historicoTB")
+          ) || [];
+
+        historico.unshift({
+
+          nome,
+          cpf,
+          idade,
+
+          resultado,
+
+          data:
+            new Date().toLocaleString(),
+
+          dados
+
+        });
+
+        localStorage.setItem(
+          "historicoTB",
+          JSON.stringify(historico)
+        );
+
+    });
+
+    /* ====================================== */
+    /* LIMPAR */
+    /* ====================================== */
+
+    document
+      .getElementById("clearBtn")
+      .addEventListener("click", () => {
+
+        document
+          .querySelectorAll("input")
+          .forEach((input) => {
+
+            input.value = "";
+
+          });
+
+        document
+          .querySelectorAll("select")
+          .forEach((select) => {
+
+            select.selectedIndex = 0;
+
+          });
+
+        document
+          .getElementById("resultCard")
+          .style.display = "none";
+
+    });
+
+    /* ====================================== */
+    /* DARK MODE GLOBAL */
+    /* ====================================== */
+
+    const themeToggle =
+      document.getElementById("themeToggle");
+
+    const themeText =
+      document.getElementById("themeText");
+
+    const temaSalvo =
+      localStorage.getItem("theme");
+
+    if (temaSalvo === "dark") {
+
+      document.body.classList.add(
+        "dark-mode"
+      );
+
+      themeToggle.checked = true;
+
+      themeText.textContent =
+        "🌙 Escuro";
+
+    }
+
+    themeToggle.addEventListener("change", () => {
+
+      if (themeToggle.checked) {
+
+        document.body.classList.add(
+          "dark-mode"
+        );
+
+        localStorage.setItem(
+          "theme",
+          "dark"
+        );
+
+        themeText.textContent =
+          "🌙 Escuro";
+
+      } else {
+
+        document.body.classList.remove(
+          "dark-mode"
+        );
+
+        localStorage.setItem(
+          "theme",
+          "light"
+        );
+
+        themeText.textContent =
+          "☀️ Claro";
+
+      }
+
+    });
+
+    const cpfInput =
+      document.getElementById("cpfPaciente");
+
+    cpfInput.addEventListener("input", (e) => {
+      let valor =
+        e.target.value.replace(/\D/g, "");
+
+      valor = valor.replace(
+        /(\d{3})(\d{3})(\d{3})(\d{2})/,
+        "$1.$2.$3-$4"
+      );
+      
+      e.target.value = valor;
+
+    });
+
+  </script>
+
+</body>
+
+</html>

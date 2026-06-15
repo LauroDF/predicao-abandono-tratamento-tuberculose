@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Histórico - TB Predict
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+
+    <!-- ESQUERDA -->
+    <div class="nav-left">
+
+      🫁 TB Predict
+
+    </div>
+
+    <!-- CENTRO -->
+    <div class="nav-center-links">
+
+      <a href="index.html">
+
+        Predição
+
+      </a>
+
+      <a
+        href="historico.html"
+        class="active"
+      >
+
+        Histórico
+
+      </a>
+
+    </div>
+
+    <!-- DIREITA -->
+    <div class="nav-right">
+
+      <span
+        class="theme-text"
+        id="themeText"
+      >
+
+        ☀️ Claro
+
+      </span>
+
+      <label class="switch">
+
+        <input
+          type="checkbox"
+          id="themeToggle"
+        >
+
+        <span class="slider"></span>
+
+      </label>
+
+    </div>
+
+  </nav>
+
+  <!-- CONTAINER -->
+  <div class="history-container">
+
+    <h1>
+
+      Histórico de Pacientes
+
+    </h1>
+
+    <!-- FILTROS -->
+    <div class="filters">
+
+      <select id="sortType">
+
+        <option value="recentes">
+          Ordem de Adição
+        </option>
+
+        <option value="az">
+          Nome (A → Z)
+        </option>
+
+        <option value="za">
+          Nome (Z → A)
+        </option>
+
+        <option value="probAsc">
+          Probabilidade (Menor → Maior)
+        </option>
+
+        <option value="probDesc">
+          Probabilidade (Maior → Menor)
+        </option>
+
+      </select>
+
+    </div>
+
+    <!-- AÇÕES -->
+    <div class="history-actions">
+
+      <div class="right-actions">
+
+        <button id="deleteSelected">
+
+          Selecionar Todos
+
+        </button>
+
+        <button id="deleteAll">
+
+          Limpar Histórico
+
+        </button>
+
+      </div>
+
+    </div>
+
+    <!-- LISTA -->
+    <div id="historyList"></div>
+
+  </div>
+
+  <script>
+
+    /* ====================================== */
+    /* HISTÓRICO */
+    /* ====================================== */
+
+    let historico =
+      JSON.parse(
+        localStorage.getItem("historicoTB")
+      ) || [];
+
+    const historyList =
+      document.getElementById("historyList");
+
+    const sortType =
+      document.getElementById("sortType");
+
+    let todosSelecionados = false;
+
+    /* ====================================== */
+    /* RENDER */
+    /* ====================================== */
+
+    function renderHistorico(lista) {
+
+      historyList.innerHTML = "";
+
+      lista.forEach((paciente, index) => {
+
+        const card =
+          document.createElement("div");
+
+        card.className =
+          "history-card";
+
+        card.innerHTML = `
+
+          <!-- CHECKBOX -->
+          <div class="card-checkbox">
+
+            <input
+              type="checkbox"
+              class="select-card"
+              data-index="${index}"
+            >
+
+          </div>
+
+          <!-- HEADER -->
+          <div class="history-header">
+
+            <div>
+
+              <h2>
+                ${paciente.nome}
+              </h2>
+
+              <p>
+                <strong>CPF:</strong>
+                ${paciente.cpf}
+              </p>
+
+              <p>
+                <strong>Probabilidade:</strong>
+                ${paciente.resultado}%
+              </p>
+
+            </div>
+
+          </div>
+
+          <!-- DETALHES -->
+          <div
+            class="history-details"
+            id="details-${index}"
+          >
+
+            <p>
+              <strong>Idade:</strong>
+              ${paciente.idade}
+            </p>
+
+            <p>
+              <strong>Data:</strong>
+              ${paciente.data}
+            </p>
+
+            ${Object.entries(paciente.dados)
+              .map(([campo, valor]) => `
+
+                <p>
+
+                  <strong>${campo}:</strong>
+
+                  ${valor}
+
+                </p>
+
+              `).join("")}
+
+          </div>
+
+          <!-- FOOTER -->
+          <div class="card-footer">
+
+            <button
+              class="info-btn"
+              onclick="toggleInfo(${index})"
+            >
+
+              Mais info.
+
+            </button>
+
+          </div>
+
+        `;
+
+        historyList.appendChild(card);
+
+      });
+
+    }
+
+    /* ====================================== */
+    /* TOGGLE INFO */
+    /* ====================================== */
+
+    function toggleInfo(index) {
+
+      const details =
+        document.getElementById(
+          `details-${index}`
+        );
+
+      details.classList.toggle("show");
+
+    }
+
+    /* ====================================== */
+    /* FILTROS */
+    /* ====================================== */
+
+    sortType.addEventListener("change", () => {
+
+      let copia =
+        [...historico];
+
+      switch(sortType.value) {
+
+        case "az":
+
+          copia.sort((a, b) =>
+            a.nome.localeCompare(b.nome)
+          );
+
+        break;
+
+        case "za":
+
+          copia.sort((a, b) =>
+            b.nome.localeCompare(a.nome)
+          );
+
+        break;
+
+        case "probAsc":
+
+          copia.sort((a, b) =>
+            a.resultado - b.resultado
+          );
+
+        break;
+
+        case "probDesc":
+
+          copia.sort((a, b) =>
+            b.resultado - a.resultado
+          );
+
+        break;
+
+        default:
+
+          copia =
+            [...historico];
+
+      }
+
+      renderHistorico(copia);
+
+    });
+
+    /* ====================================== */
+    /* SELECIONAR TODOS */
+    /* ====================================== */
+
+    document
+      .getElementById("deleteSelected")
+      .addEventListener("click", () => {
+
+        const checks =
+          document.querySelectorAll(
+            ".select-card"
+          );
+
+        todosSelecionados =
+          !todosSelecionados;
+
+        checks.forEach((check) => {
+
+          check.checked =
+            todosSelecionados;
+
+        });
+
+        document
+          .getElementById("deleteSelected")
+          .textContent =
+            todosSelecionados
+              ? "Desmarcar Todos"
+              : "Selecionar Todos";
+
+    });
+
+    /* ====================================== */
+    /* REMOVER SELECIONADOS */
+    /* ====================================== */
+
+    document
+    .getElementById("deleteAll")
+    .addEventListener("click", () => {
+
+        const checks =
+        document.querySelectorAll(
+            ".select-card"
+        );
+
+        const selecionados =
+        [...checks]
+        .filter(check => check.checked);
+
+        if (selecionados.length === 0) {
+
+        alert(
+            "Selecione pelo menos um paciente."
+        );
+
+        return;
+
+        }
+
+        const confirmar =
+        confirm(
+            "Deseja remover os pacientes selecionados?"
+        );
+
+        if (!confirmar) return;
+
+        let novoHistorico = [];
+
+        checks.forEach((check, i) => {
+
+        if (!check.checked) {
+
+            novoHistorico.push(
+            historico[i]
+            );
+
+        }
+
+        });
+
+        historico =
+        novoHistorico;
+
+        localStorage.setItem(
+        "historicoTB",
+        JSON.stringify(historico)
+        );
+
+        renderHistorico(historico);
+
+        todosSelecionados = false;
+
+        document
+        .getElementById("deleteSelected")
+        .textContent =
+            "Selecionar Todos";
+
+    });
+
+    /* ====================================== */
+    /* DARK MODE GLOBAL */
+    /* ====================================== */
+
+    const themeToggle =
+      document.getElementById("themeToggle");
+
+    const themeText =
+      document.getElementById("themeText");
+
+    const temaSalvo =
+      localStorage.getItem("theme");
+
+    if (temaSalvo === "dark") {
+
+      document.body.classList.add(
+        "dark-mode"
+      );
+
+      themeToggle.checked = true;
+
+      themeText.textContent =
+        "🌙 Escuro";
+
+    }
+
+    themeToggle.addEventListener("change", () => {
+
+      if (themeToggle.checked) {
+
+        document.body.classList.add(
+          "dark-mode"
+        );
+
+        localStorage.setItem(
+          "theme",
+          "dark"
+        );
+
+        themeText.textContent =
+          "🌙 Escuro";
+
+      } else {
+
+        document.body.classList.remove(
+          "dark-mode"
+        );
+
+        localStorage.setItem(
+          "theme",
+          "light"
+        );
+
+        themeText.textContent =
+          "☀️ Claro";
+
+      }
+
+    });
+
+    /* ====================================== */
+
+    renderHistorico(historico);
+
+  </script>
+
+</body>
+
+</html>
