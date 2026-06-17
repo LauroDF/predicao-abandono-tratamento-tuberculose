@@ -81,10 +81,12 @@ tb-predict/
 
 ## Integrantes
 
-* Nome do Integrante 1
-* Nome do Integrante 2
-* Nome do Integrante 3
-* Nome do Integrante 4
+* Augusto Rosso
+* Felipe Bacchi
+* Gabriel Mascarenhas
+* Lauro Dariva Ferneda
+* Pedro Augusto
+* Pedro Leal
 
 ---
 
