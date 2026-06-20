@@ -1,34 +1,41 @@
-from typing import Literal
+from typing import Literal, TypedDict
 from pydantic import BaseModel
+from datetime import datetime
 
 from ..patient.schemas import PatientDTO
+
 
 class ExamDataDTO(BaseModel):
     AGRAVTABAC: Literal[
         "Ignorado",
         "Não",
-        "Sim"
+        "Sim",
+        None
     ]
     AGRAVDROGA: Literal[
         "Ignorado",
         "Não",
-        "Sim"
+        "Sim",
+        None
     ]
     AGRAVAIDS: Literal[
         "Ignorado",
         "Não",
-        "Sim"
+        "Sim",
+        None
     ]    
     AGRAVDIABE: Literal[
         "Ignorado",
         "Não",
-        "Sim"
+        "Sim",
+        None
     ]
     HIV: Literal[
         "Não realizado",
         "Negativo",
         "Positivo",
-        "Em andamento"
+        "Em andamento",
+        None
     ]
     POP_RUA: Literal[
         "Não",
@@ -43,26 +50,22 @@ class ExamDataDTO(BaseModel):
         "Sim"
     ]
     CS_SEXO: Literal[
-        "Masculino",
-        "Feminino",
-        "Ignorado"
+        "M",
+        "F",
+        "I"
     ]
     BACILOSC_E: Literal[
         "Positivo",
         "Negativo",
-        "Não realizado"
-    ]
-    CULTURA_ES: Literal[
-        "Positiva",
-        "Negativa",
-        "Em andamento",
-        "Não realizada"
+        "Não realizado",
+        "Não se aplica"
     ]
     RAIOX_TORA: Literal[
         "Suspeito",
         "Normal",
         "Outra patologia",
-        "Não realizado"
+        "Não realizado",
+        None
     ]
     CS_RACA: Literal[
         "Branca",
@@ -70,7 +73,8 @@ class ExamDataDTO(BaseModel):
         "Amarela",
         "Parda",
         "Indígena",
-        "Ignorado"
+        "Ignorado",
+        None
     ]
     TRATAMENTO: Literal[
         "Caso novo",
@@ -78,22 +82,6 @@ class ExamDataDTO(BaseModel):
         "Reingresso após abandono",
         "Transferência",
         "Não sabe"
-    ]
-    CULTURA_OU: Literal[
-        "Positiva",
-        "Negativa",
-        "Em andamento",
-        "Não realizada"
-    ]
-    HISTOPATOL: Literal[
-        "BAAR positivo",
-        "Sugestivo TB",
-        "Não sugestivo",
-        "Não realizado"
-    ]
-    TRATSUP_AT: Literal[
-        "Sim",
-        "Não"
     ]
     CS_ESCOL_N: Literal[
         "Analfabeto",
@@ -105,7 +93,8 @@ class ExamDataDTO(BaseModel):
         "Ensino médio completo",
         "Superior incompleto",
         "Superior completo",
-        "Ignorado"
+        "Ignorado",
+        "Não se aplica"
     ]
     SG_UF_NOT: Literal [
         "AC", "AL", "AP", "AM", "BA",
@@ -120,3 +109,4 @@ class ExamDataDTO(BaseModel):
 class PatientExamPayload(BaseModel):
     PACIENTE: PatientDTO
     DADOS: ExamDataDTO
+    MODELO: str
