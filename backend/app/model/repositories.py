@@ -32,7 +32,7 @@ class ModelRepository:
                     "name": str(metadata.get("name", folder.name)),
                     "description": str(metadata.get("description", "")),
                     "path": model_path,
-                    "preprocessor": str(metadata.get('preprocessor')) or None
+                    "preprocessor": metadata.get('preprocessor', None)
                 }
             except json.JSONDecodeError as exc:
                 raise ValueError(f"Invalid JSON in {metadata_file}: {exc}") from exc

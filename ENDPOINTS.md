@@ -40,7 +40,9 @@ Create a new patient record.
 - Method: `POST`
 - URL: `/api/patient/create`
 - Content-Type: `application/json`
-- Body: Patient information object
+- Body schema:
+  - `NOME`: string
+  - `CPF`: integer
 
 **Response:**
 - Status: `201 Created`
@@ -76,7 +78,7 @@ Generate a prediction for an exam using clinical data.
     - `NOME`: string
     - `CPF`: integer
   - `DADOS`: object with exam attributes and clinical fields
-  - `MODELO`: string
+  - `MODELO`: string with model_id recieved by GET /api/model/list
 
 **Example request body:**
 
@@ -104,7 +106,7 @@ Generate a prediction for an exam using clinical data.
     "SG_UF_NOT": "SP",
     "IDADE_ANOS": 35
   },
-  "MODELO": "modelo-v1"
+  "MODELO": "log_reg"
 }
 ```
 
@@ -140,9 +142,6 @@ Retrieve exam history for a patient.
 **Response:**
 - Status: `200 OK`
 - Body: JSON object containing exam history for the patient
-
-**Notes:**
-- If the patient does not exist, returns `404 Not Found`.
 
 ### GET /api/exam/results
 

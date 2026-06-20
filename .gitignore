@@ -6,3 +6,4 @@ Lib/
 Scripts/
 Include/
 pyvenv.cfg
+.venv/

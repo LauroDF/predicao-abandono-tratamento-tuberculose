@@ -12,7 +12,7 @@ from .schemas import ModelMetadata, ModelOutput
 
 from ..exam.schemas import ExamDataDTO
 
-from ..exceptions import InternalServerError
+from ..exceptions import InternalServerError, ResourceNotFoundError
 
 
 class ModelService:
@@ -20,6 +20,7 @@ class ModelService:
     def __init__(self, model_repo: ModelRepository) -> None:
         self.model_repo = model_repo
         self._model_cache: dict[str, object] = {}
+        self._preprep_cache: dict[str, object] = {}
 
     def get_models(self) -> list[ModelMetadata]:
         models = self.model_repo.list_models()
@@ -32,7 +33,7 @@ class ModelService:
     def load_artifact(self, model_id: str | Path):
         key = str(model_id)
         if key in self._model_cache:
-            return self._model_cache[key]
+            return self._model_cache[key], self._preprep_cache[key]
 
         # resolve artifact path
         if isinstance(model_id, (str,)):
@@ -41,7 +42,7 @@ class ModelService:
             artifact = Path(model_id)
 
         if artifact is None or not Path(artifact).exists():
-            raise InternalServerError(f"Model artifact not found for '{model_id}'")
+            raise ResourceNotFoundError(f"Model artifact not found for '{model_id}'")
 
         prepro_file = self.model_repo.read_model_metadata(artifact.parent).get("preprocessor")
 
@@ -63,6 +64,7 @@ class ModelService:
             raise InternalServerError(f"Unsopported extension for model: {artifact.suffix}") 
                 
         self._model_cache[key] = model
+        self._preprep_cache[key] = preprocessor
         return model, preprocessor
 
     def predict_with_model(self, model_artifact: str | Path, data: ExamDataDTO) -> ModelOutput:
@@ -77,11 +79,13 @@ class ModelService:
             
             probability = float(result[0][1])
             
-            if probability <= 0.25:
+            if probability < 0.2:
                 category = 'Muito improvável'
-            elif probability <= 0.5:
+            elif probability < 0.4:
                 category = 'Improvável'
-            elif probability <= 0.75:
+            elif probability < 0.6:
+                category = 'Neutro'
+            elif probability < 0.8:
                 category = 'Provável'
             else:
                 category = 'Muito provável'

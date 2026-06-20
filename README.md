@@ -42,7 +42,7 @@ Atualmente o frontend está totalmente funcional, incluindo validações, histó
 * CSS3
 * JavaScript (Vanilla JS)
 * LocalStorage
-* Python
+* Python (3.12)
 * Flask
 
 ---
