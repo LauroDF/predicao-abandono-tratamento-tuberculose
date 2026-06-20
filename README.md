@@ -44,6 +44,13 @@ Atualmente o frontend está totalmente funcional, incluindo validações, histó
 * LocalStorage
 * Python (3.12)
 * Flask
+* Pandas 
+* Numpy
+* Scikit-learn
+* Matplotlib
+* Seaborn
+* Keras
+* Tensorflow
 
 ---
 
