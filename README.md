@@ -57,7 +57,7 @@ predicao-abandono-tratamento-tuberculose/
 ├── backend/        # API Flask e integração com modelos
 │   ├── requirements.txt
 │   ├── run.py
-|   |── logs/                
+|   ├── logs/                
 │   └── app/
 │       ├── __init__.py
 │       ├── error_handlers.py
