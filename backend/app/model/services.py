@@ -30,6 +30,13 @@ class ModelService:
 
         return models
 
+    def get_model_name(self, model_id: str) -> str:
+        try:
+            metadata = self.model_repo.read_model_metadata(self.model_repo.models_path / model_id)
+            return str(metadata.get("name", model_id))
+        except Exception:
+            return model_id
+
     def load_artifact(self, model_id: str | Path):
         key = str(model_id)
         if key in self._model_cache:

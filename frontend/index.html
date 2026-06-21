@@ -521,10 +521,20 @@
         })
           .then(response => {
             clearTimeout(timeoutId);
-            if (!response.ok) {
-              return response.json().then(err => Promise.reject(err));
-            }
-            return response.json();
+            return response.text().then(text => {
+              let data = {};
+              if (text) {
+                try {
+                  data = JSON.parse(text);
+                } catch (parseError) {
+                  data = { error: text };
+                }
+              }
+              if (!response.ok) {
+                return Promise.reject(data);
+              }
+              return data;
+            });
           })
           .then(data => {
             document

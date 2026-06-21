@@ -22,8 +22,9 @@ class ExamService:
         model_id = payload.MODELO
         
         self.patient_service.create_patient(patient)
+        model_name = self.model_service.get_model_name(model_id)
         exam_results = self.model_service.predict_with_model(model_id, exam_data)
-        saved_record = self.exam_repo.save_exam_record(patient, exam_data, exam_results)
+        saved_record = self.exam_repo.save_exam_record(patient, exam_data, exam_results, model_id, model_name)
         
         return saved_record
     

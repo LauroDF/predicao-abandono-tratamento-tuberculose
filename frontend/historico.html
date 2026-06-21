@@ -214,6 +214,11 @@
                 ${record.result.CLASSIFICACAO}
               </p>
 
+              <p>
+                <strong>Modelo:</strong>
+                ${record.model?.name || record.model?.id || 'Desconhecido'}
+              </p>
+
             </div>
 
           </div>
@@ -249,6 +254,7 @@
 
             <button
               class="info-btn"
+              data-index="${index}"
               onclick="toggleInfo(${index})"
             >
 
@@ -271,14 +277,12 @@
     /* ====================================== */
 
     function toggleInfo(index) {
+      const details = document.getElementById(`details-${index}`);
+      const card = details.closest('.history-card');
+      const button = card.querySelector('.info-btn');
 
-      const details =
-        document.getElementById(
-          `details-${index}`
-        );
-
-      details.classList.toggle("show");
-
+      const isShown = details.classList.toggle('show');
+      button.textContent = isShown ? 'Menos info.' : 'Mais info.';
     }
 
     /* ====================================== */
