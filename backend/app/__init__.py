@@ -1,4 +1,7 @@
+from pathlib import Path
+
 from flask import Flask
+from flask_cors import CORS
 
 from .service_registry import build_container
 from .error_handlers import register_error_handlers
@@ -9,7 +12,14 @@ from .model.controllers import create_model_blueprint
 
 def create_app() -> Flask:
 
-    app = Flask(__name__)
+    frontend_folder = Path(__file__).resolve().parents[2] / "frontend"
+    app = Flask(
+        __name__,
+        static_folder=str(frontend_folder),
+        static_url_path=""
+    )
+    
+    CORS(app, resources={r"/api/*": {"origins": "*"}})
     
     register_error_handlers(app)
     
@@ -19,5 +29,13 @@ def create_app() -> Flask:
     app.register_blueprint(create_heatlcheck_blueprint(container.health_service), url_prefix='/api/health-check')
     app.register_blueprint(create_exam_blueprint(container.exam_service), url_prefix='/api/exam')
     app.register_blueprint(create_model_blueprint(container.model_service), url_prefix='/api/model')
+
+    @app.route('/')
+    def serve_index():
+        return app.send_static_file('index.html')
+
+    @app.route('/historico.html')
+    def serve_history():
+        return app.send_static_file('historico.html')
     
     return app
