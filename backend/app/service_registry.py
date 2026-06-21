@@ -26,8 +26,8 @@ def build_container() -> AppContainer:
     health_repo = HealthCheckRepository()
     health_service = HealthcheckService(health_repo)
     
-    morel_repo = ModelRepository()
-    model_service = ModelService(morel_repo)
+    model_repo = ModelRepository()
+    model_service = ModelService(model_repo)
 
     exam_repo = ExamRepository()
     exam_service = ExamService(exam_repo, model_service, patient_service)

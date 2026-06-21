@@ -9,14 +9,25 @@ def create_exam_blueprint(exam_service: ExamService) -> Blueprint:
     @exam_bp.route('/predict', methods=['POST'])
     def create_exam():
         data = request.json or {}
+        if not data:
+            return jsonify({"error": "Request body vazio"}), 400
         created_exam = exam_service.generate_results(data)
-        return jsonify(created_exam), 200
+        return jsonify(created_exam), 201
         
     @exam_bp.route('/history', methods=['GET'])
-    def get_exam_data():
+    def get_exam_history():
+        history = exam_service.get_all_history()
+        return jsonify(history), 200
+
+    @exam_bp.route('/history/delete', methods=['POST'])
+    def delete_exam_history():
         data = request.json or {}
-        exam_data = exam_service.get_exam_data(data)
-        return jsonify(exam_data), 200
+        record_ids = data.get('ids', [])
+        if not isinstance(record_ids, list):
+            record_ids = [record_ids]
+
+        updated_history = exam_service.delete_history(record_ids)
+        return jsonify(updated_history), 200
     
     @exam_bp.route('/results', methods=['GET'])
     def get_exam_results():

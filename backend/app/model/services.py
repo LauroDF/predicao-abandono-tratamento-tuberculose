@@ -68,7 +68,9 @@ class ModelService:
         return model, preprocessor
 
     def predict_with_model(self, model_artifact: str | Path, data: ExamDataDTO) -> ModelOutput:
-        # return 100.0 # fallback to test the rest of the backend
+        if not model_artifact:
+            raise ResourceNotFoundError("Model ID não pode ser vazio")
+        
         model, preprocesor = self.load_artifact(model_artifact)
         features = self.regularize_exam_data(data)
         try:
@@ -78,6 +80,7 @@ class ModelService:
             result = model.predict_proba(features) if hasattr(model, 'predict_proba') else model.predict(features)
             
             probability = float(result[0][1])
+            probability_percent = round(probability * 100, 2)
             
             if probability < 0.2:
                 category = 'Muito improvável'
@@ -92,7 +95,7 @@ class ModelService:
 
             output = ModelOutput(
                 CLASSIFICACAO=category,
-                PROBABILIDADE=round(probability, 2)
+                PROBABILIDADE=probability_percent
             )
             
             return output

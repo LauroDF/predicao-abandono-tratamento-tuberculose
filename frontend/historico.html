@@ -150,10 +150,7 @@
     /* HISTÓRICO */
     /* ====================================== */
 
-    let historico =
-      JSON.parse(
-        localStorage.getItem("historicoTB")
-      ) || [];
+    let historico = [];
 
     const historyList =
       document.getElementById("historyList");
@@ -171,7 +168,7 @@
 
       historyList.innerHTML = "";
 
-      lista.forEach((paciente, index) => {
+      lista.forEach((record, index) => {
 
         const card =
           document.createElement("div");
@@ -188,6 +185,7 @@
               type="checkbox"
               class="select-card"
               data-index="${index}"
+              data-id="${record.id}"
             >
 
           </div>
@@ -198,17 +196,22 @@
             <div>
 
               <h2>
-                ${paciente.nome}
+                ${record.patient.NOME}
               </h2>
 
               <p>
                 <strong>CPF:</strong>
-                ${paciente.cpf}
+                ${record.patient.CPF}
               </p>
 
               <p>
                 <strong>Probabilidade:</strong>
-                ${paciente.resultado}%
+                ${record.result.PROBABILIDADE}%
+              </p>
+
+              <p>
+                <strong>Classificação:</strong>
+                ${record.result.CLASSIFICACAO}
               </p>
 
             </div>
@@ -222,16 +225,11 @@
           >
 
             <p>
-              <strong>Idade:</strong>
-              ${paciente.idade}
-            </p>
-
-            <p>
               <strong>Data:</strong>
-              ${paciente.data}
+              ${record.timestamp}
             </p>
 
-            ${Object.entries(paciente.dados)
+            ${Object.entries(record.exam_data)
               .map(([campo, valor]) => `
 
                 <p>
@@ -297,7 +295,7 @@
         case "az":
 
           copia.sort((a, b) =>
-            a.nome.localeCompare(b.nome)
+            a.patient.NOME.localeCompare(b.patient.NOME)
           );
 
         break;
@@ -305,7 +303,7 @@
         case "za":
 
           copia.sort((a, b) =>
-            b.nome.localeCompare(a.nome)
+            b.patient.NOME.localeCompare(a.patient.NOME)
           );
 
         break;
@@ -313,7 +311,7 @@
         case "probAsc":
 
           copia.sort((a, b) =>
-            a.resultado - b.resultado
+            a.result.PROBABILIDADE - b.result.PROBABILIDADE
           );
 
         break;
@@ -321,7 +319,7 @@
         case "probDesc":
 
           copia.sort((a, b) =>
-            b.resultado - a.resultado
+            b.result.PROBABILIDADE - a.result.PROBABILIDADE
           );
 
         break;
@@ -374,67 +372,110 @@
     /* ====================================== */
 
     document
-    .getElementById("deleteAll")
-    .addEventListener("click", () => {
+      .getElementById("deleteAll")
+      .addEventListener("click", () => {
 
         const checks =
-        document.querySelectorAll(
+          document.querySelectorAll(
             ".select-card"
-        );
+          );
 
         const selecionados =
-        [...checks]
-        .filter(check => check.checked);
+          [...checks]
+            .filter(check => check.checked);
+
+        let idsToDelete = [];
 
         if (selecionados.length === 0) {
+          const confirmarLimparTudo = confirm(
+            "Nenhum paciente selecionado. Deseja limpar todo o histórico?"
+          );
 
-        alert(
-            "Selecione pelo menos um paciente."
-        );
-
-        return;
-
-        }
-
-        const confirmar =
-        confirm(
-            "Deseja remover os pacientes selecionados?"
-        );
-
-        if (!confirmar) return;
-
-        let novoHistorico = [];
-
-        checks.forEach((check, i) => {
-
-        if (!check.checked) {
-
-            novoHistorico.push(
-            historico[i]
+          if (!confirmarLimparTudo) return;
+          idsToDelete = historico.map(record => record.id);
+        } else {
+          const confirmar =
+            confirm(
+              "Deseja remover os pacientes selecionados?"
             );
 
+          if (!confirmar) return;
+          idsToDelete = selecionados.map(check => check.dataset.id);
         }
 
-        });
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-        historico =
-        novoHistorico;
-
-        localStorage.setItem(
-        "historicoTB",
-        JSON.stringify(historico)
-        );
-
-        renderHistorico(historico);
-
-        todosSelecionados = false;
-
-        document
-        .getElementById("deleteSelected")
-        .textContent =
-            "Selecionar Todos";
-
+        fetch('/api/exam/history/delete', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ ids: idsToDelete }),
+          signal: controller.signal
+        })
+          .then(response => {
+            clearTimeout(timeoutId);
+            if (!response.ok) {
+              return response.json().then(err => Promise.reject(err));
+            }
+            return response.json();
+          })
+          .then(updatedHistory => {
+            historico = updatedHistory;
+            renderHistorico(historico);
+            todosSelecionados = false;
+            document
+              .getElementById("deleteSelected")
+              .textContent =
+                "Selecionar Todos";
+            alert('Registros removidos com sucesso.');
+          })
+          .catch(error => {
+            clearTimeout(timeoutId);
+            console.error(error);
+            if (error.name === 'AbortError') {
+              alert('Conexão expirou ao remover registros.');
+            } else {
+              alert('Erro ao remover registros: ' + (error.error || error.message || 'Erro desconhecido'));
+            }
+          });
     });
+
+    /* ====================================== */
+    /* CARREGA HISTÓRICO */
+    /* ====================================== */
+
+    function loadHistory() {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+      fetch('/api/exam/history', { signal: controller.signal })
+        .then(response => {
+          clearTimeout(timeoutId);
+          if (!response.ok) {
+            throw new Error(`Erro ${response.status}: Não foi possível carregar o histórico`);
+          }
+          return response.json();
+        })
+        .then(records => {
+          historico = records;
+          renderHistorico(historico);
+        })
+        .catch(error => {
+          clearTimeout(timeoutId);
+          console.error('Erro ao carregar histórico:', error);
+          if (error.name === 'AbortError') {
+            alert('Conexão expirou ao carregar histórico.');
+          } else {
+            alert(`Erro ao carregar histórico: ${error.message}`);
+          }
+          historico = [];
+          renderHistorico(historico);
+        });
+    }
+
+    loadHistory();
 
     /* ====================================== */
     /* DARK MODE GLOBAL */
