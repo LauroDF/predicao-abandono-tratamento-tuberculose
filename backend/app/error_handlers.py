@@ -31,3 +31,8 @@ def register_error_handlers(app: Flask) -> None:
     @app.errorhandler(KeyError)
     def handle_key_error(e):
         return handle_resource_not_found(f"Resource not found: {e}")
+
+    @app.errorhandler(Exception)
+    def handle_generic_exception(e):
+        logger.exception(f"Unhandled exception: {e}")
+        return jsonify({"error": "Erro interno do servidor"}), 500

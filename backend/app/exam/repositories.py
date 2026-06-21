@@ -30,7 +30,7 @@ class ExamRepository:
             encoding="utf-8"
         )
 
-    def save_exam_record(self, user: PatientDTO, exam_data: ExamDataDTO, results: ModelOutput) -> dict:
+    def save_exam_record(self, user: PatientDTO, exam_data: ExamDataDTO, results: ModelOutput, model_id: str, model_name: str) -> dict:
         records = self._read_records()
 
         dt_now = datetime.now().isoformat(sep=" ")
@@ -41,6 +41,10 @@ class ExamRepository:
             "result": {
                 "PROBABILIDADE": results.get("PROBABILIDADE"),
                 "CLASSIFICACAO": results.get("CLASSIFICACAO"),
+            },
+            "model": {
+                "id": model_id,
+                "name": model_name,
             },
             "timestamp": dt_now,
         }
