@@ -96,7 +96,7 @@ class ExamDataDTO(BaseModel):
         "Ignorado",
         "Não se aplica"
     ]
-    SG_UF_NOT: Literal [
+    SG_UF_NOT: Literal[
         "AC", "AL", "AP", "AM", "BA",
         "CE", "DF", "ES", "GO", "MA",
         "MT", "MS", "MG", "PA", "PB",

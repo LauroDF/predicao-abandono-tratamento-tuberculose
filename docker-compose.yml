@@ -3,3 +3,7 @@ services:
     build: ./backend
     ports:
       - "7000:7000"
+    volumes:
+      - ./models:/models
+      - ./preprocessing:/preprocessing
+      - ./frontend:/frontend
