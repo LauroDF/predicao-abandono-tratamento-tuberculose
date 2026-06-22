@@ -84,9 +84,15 @@ class ModelService:
             if preprocesor is not None:
                 features = preprocesor.transform(features)
                 
-            result = model.predict_proba(features) if hasattr(model, 'predict_proba') else model.predict(features)
-            
-            probability = float(result[0][1])
+            if hasattr(model, 'predict_proba'):
+                result = model.predict_proba(features)
+                probability = float(result[0][1])
+            else:
+                result = model.predict(features)
+                if len(result[0]) == 1:
+                    probability = float(result[0][0])
+                else:
+                    probability = float(result[0][1])
             probability_percent = round(probability * 100, 2)
             
             if probability < 0.2:
