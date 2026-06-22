@@ -1,5 +1,5 @@
 {
   "name": "Keras Neural Network",
-  "description": "Cruza todo o histórico do paciente em profundidade com foco total na prevenção. É o modelo com maior precisão e acurácia. Usa principalmente o tipo de tratamento, se é ppl, se usa drogas e a idade do paciente para fazer a predição.",
+  "description": "Cruza todo o histórico do paciente em profundidade usando técnicas avançadas. É o modelo com maior precisão e acurácia. Usa principalmente o tipo de tratamento, se é ppl, a idade e se usa drogas para fazer a predição.",
   "preprocessor": "rede_neural_pipeline_preprocessing.pkl"
 }
